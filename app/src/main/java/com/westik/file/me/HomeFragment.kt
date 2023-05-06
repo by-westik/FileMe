@@ -22,9 +22,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.button.MaterialButton
+import com.westik.file.me.adapters.FileAdapter
 import com.westik.file.me.databinding.FragmentHomeBinding
 import com.westik.file.me.dialogs.AskingPermissionDialog
+import com.westik.file.me.helpers.Files
+import com.westik.file.me.models.FileModel
 import java.io.File
 import java.lang.Exception
 
@@ -33,6 +37,8 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var fileAdapter: FileAdapter
     private lateinit var launcher: ActivityResultLauncher<String>
 
     override fun onCreateView(
@@ -43,9 +49,22 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view = binding.root
         showPermissionDialog()
+        setupRecyclerView()
         return view
     }
 
+    private fun setupRecyclerView(files: List<FileModel> = Files.getFiles()) {
+        Toast.makeText(requireContext(), "RV files size = ${files.size}", Toast.LENGTH_SHORT).show()
+        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        fileAdapter = FileAdapter(files)
+        binding.rvFiles.apply {
+            this.layoutManager = linearLayoutManager
+            this.adapter = fileAdapter
+        }
+        Toast.makeText(requireContext(), "RV2", Toast.LENGTH_SHORT).show()
+
+
+    }
     private fun showPermissionDialog() {
         if (isPermissionGranted(requireContext())) {
             Toast.makeText(requireContext(), "PERMISSION GRANTED", Toast.LENGTH_SHORT).show()
