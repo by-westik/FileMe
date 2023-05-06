@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">FileMe</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Permission dialog strings -->
+    <string name="dialog_title">Требуется разрешение</string>
+    <string name="dialog_message">Для успешной работы приложения, пожалуйста, предоставьте разрешение на работу со внутренней памятью</string>
+    <string name="permission_allow">Разрешить</string>
 </resources>
