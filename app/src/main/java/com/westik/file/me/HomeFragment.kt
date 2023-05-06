@@ -56,7 +56,7 @@ class HomeFragment : Fragment() {
     private fun setupRecyclerView(files: List<FileModel> = Files.getFiles()) {
         Toast.makeText(requireContext(), "RV files size = ${files.size}", Toast.LENGTH_SHORT).show()
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        fileAdapter = FileAdapter(files)
+        fileAdapter = FileAdapter(files, this)
         binding.rvFiles.apply {
             this.layoutManager = linearLayoutManager
             this.adapter = fileAdapter

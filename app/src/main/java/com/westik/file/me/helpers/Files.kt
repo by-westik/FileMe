@@ -39,6 +39,7 @@ class Files {
                     FileModel
                         (
                         name = it.name,
+                        type = it.extension.lowercase(),
                         lastModified = it.lastModified(),
                         isDirectory = it.isDirectory,
                         absolutePath = it.absolutePath,
