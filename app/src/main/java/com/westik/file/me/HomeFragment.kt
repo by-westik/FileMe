@@ -3,30 +3,20 @@ package com.westik.file.me
 import android.Manifest
 import android.content.ContentValues.TAG
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.opengl.Visibility
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
-import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.findViewTreeViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.button.MaterialButton
 import com.westik.file.me.adapters.FileAdapter
 import com.westik.file.me.databinding.FragmentHomeBinding
 import com.westik.file.me.dialogs.AskingPermissionDialog
@@ -34,7 +24,6 @@ import com.westik.file.me.helpers.FileItemDecorator
 import com.westik.file.me.helpers.Files
 import com.westik.file.me.models.FileModel
 import java.io.File
-import java.lang.Exception
 
 
 class HomeFragment : Fragment() {
@@ -73,7 +62,9 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
     }
 
     private fun setupRecyclerView(files: List<FileModel> = Files.getFiles()) {
@@ -90,6 +81,7 @@ class HomeFragment : Fragment() {
         } ?.let {
             binding.rvFiles.addItemDecoration(it)
         }
+
 
 
     }

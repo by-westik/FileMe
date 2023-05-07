@@ -7,23 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.westik.file.me.HomeFragment
 import com.westik.file.me.R
 import com.westik.file.me.databinding.FileItemBinding
-import com.westik.file.me.databinding.FragmentHomeBinding
 import com.westik.file.me.helpers.FileIconHelper
 import com.westik.file.me.helpers.Files
 import com.westik.file.me.models.FileModel
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.ArrayList
 import java.util.Date
 
-class FileViewHolder(binding: FileItemBinding, private val context: Context) : RecyclerView.ViewHolder(binding.root) {
+class FileViewHolder(binding: FileItemBinding, private val context: Context) : RecyclerView.ViewHolder(binding.root){
     private val tvFileName = binding.tvFileName
     private val tvFileDate = binding.tvFileDate
     private val tvFileSize = binding.tvFileSize
@@ -45,6 +41,7 @@ class FileViewHolder(binding: FileItemBinding, private val context: Context) : R
         tvFileName.text = file.name
         tvFileSize.text = file.size
     }
+
 
 }
 class FileAdapter(private var files: List<FileModel>, private val fragment: Fragment) : RecyclerView.Adapter<FileViewHolder>() {
@@ -75,16 +72,38 @@ class FileAdapter(private var files: List<FileModel>, private val fragment: Frag
                     directoryOnClick(Files.getFiles(file.absolutePath))
                 }
             } else {
-                val apkUri = FileProvider.getUriForFile(fragment.requireContext(), fragment.requireContext().packageName + ".MyFileProvider", File(file.absolutePath))
-                val intent = Intent(Intent.ACTION_VIEW).apply {
-                    setDataAndType(apkUri, null)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-
-                }
-                fragment.startActivity(intent)
+                openFile(file)
+            }
+        }
+        if (!file.isDirectory) {
+            holder.itemView.setOnLongClickListener {
+                sendFile(file)
+                return@setOnLongClickListener true
             }
         }
 
+    }
+
+    private fun openFile(file: FileModel) {
+        val apkUri = FileProvider.getUriForFile(fragment.requireContext(), fragment.requireContext().packageName + ".MyFileProvider", File(file.absolutePath))
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(apkUri, null)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        fragment.startActivity(intent)
+    }
+    private fun sendFile(file: FileModel) {
+        val apkUri = FileProvider.getUriForFile(
+            fragment.requireContext(),
+            fragment.requireContext().packageName + ".MyFileProvider",
+            File(file.absolutePath)
+        )
+
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            setDataAndType(apkUri, null)
+            putExtra(Intent.EXTRA_STREAM, apkUri)
+        }
+        fragment.startActivity(intent)
     }
 
     fun directoryOnClick(arrayList: ArrayList<FileModel>){
