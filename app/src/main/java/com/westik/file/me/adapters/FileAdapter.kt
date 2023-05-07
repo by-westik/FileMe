@@ -10,6 +10,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.westik.file.me.HomeFragment
 import com.westik.file.me.R
 import com.westik.file.me.databinding.FileItemBinding
 import com.westik.file.me.helpers.FileIconHelper
@@ -39,12 +40,19 @@ class FileViewHolder(binding: FileItemBinding, private val context: Context) : R
         }
         tvFileDate.text = SimpleDateFormat.getDateInstance().format(Date(file.lastModified))
         tvFileName.text = file.name
-        tvFileSize.text = file.size
+        tvFileSize.text = getFileSize(file.size)
+    }
+
+    //TODO может вынести в filehelper?
+    private fun getFileSize(length: Long): String {
+        val megaBytes = length.toDouble() / (1024 * 1024)
+        val str = String.format("%.2f", megaBytes)
+        return "$str Mb"
     }
 
 
 }
-class FileAdapter(private var files: List<FileModel>, private val fragment: Fragment) : RecyclerView.Adapter<FileViewHolder>() {
+class FileAdapter(private var files: List<FileModel>, private val fragment: HomeFragment) : RecyclerView.Adapter<FileViewHolder>() {
 
     var onItemClick:((path:String, position:Int) -> Unit)? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
@@ -108,6 +116,8 @@ class FileAdapter(private var files: List<FileModel>, private val fragment: Frag
 
     fun directoryOnClick(arrayList: ArrayList<FileModel>){
         this.files = arrayList
+        // TODO мне пока это не нравится, надо как-то потом переделать
+        fragment.setFilterData(this.files)
         notifyDataSetChanged()
     }
 }

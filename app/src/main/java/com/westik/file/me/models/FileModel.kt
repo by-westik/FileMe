@@ -8,5 +8,5 @@ data class FileModel(
     val isDirectoryEmpty: Boolean?,
     val canRead: Boolean,
     var absolutePath: String,
-    val size: String
+    val size: Long
 )

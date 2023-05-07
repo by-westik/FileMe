@@ -56,19 +56,13 @@ class Files {
                         isDirectory = it.isDirectory,
                         isDirectoryEmpty = if (it.isDirectory) it.list().isNullOrEmpty() else false,
                         absolutePath = it.absolutePath,
-                        size = getFileSize(it.absolutePath))
+                        size = it.length())
                 )
             }
 
             return result
         }
 
-        private fun getFileSize(path: String): String {
-            val file = File(path)
-            val megaBytes = file.length().toDouble() / (1024 * 1024)
-            val str = String.format("%.2f", megaBytes)
-            return "$str Mb"
-        }
 
     }
 

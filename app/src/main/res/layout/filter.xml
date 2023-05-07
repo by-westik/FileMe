@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/filter_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Сортировать по"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/chimney_sweep"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+
+        />
+
+        <ImageView
+            android:id="@+id/asc_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/arrow_up_bold"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentEnd="true"
+            app:tint="?attr/colorPrimary"
+            android:clickable="true"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/snowflake" />
+
+    <RadioGroup
+        android:id="@+id/filter_group"
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/name"
+            android:buttonTint="?attr/colorPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Названию"/>
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/date"
+            android:buttonTint="?attr/colorPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Дате создания"/>
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/size"
+            android:buttonTint="?attr/colorPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Размеру"/>
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/type"
+            android:buttonTint="?attr/colorPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Расширению"/>
+
+
+    </RadioGroup>
+
+</LinearLayout>
