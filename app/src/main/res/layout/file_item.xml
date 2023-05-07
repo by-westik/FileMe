@@ -21,8 +21,11 @@
             android:id="@+id/tv_file_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxEms="11"
             android:text="Название"
             android:layout_marginStart="10dp"
+            android:textSize="16sp"
+            android:textColor="@color/chimney_sweep"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/imv_file_image"
             app:layout_constraintBottom_toTopOf="@id/tv_file_date"/>
@@ -32,6 +35,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Дата"
+            android:textSize="14sp"
+            android:textColor="@color/bali_deep"
             android:layout_marginStart="10dp"
             app:layout_constraintTop_toBottomOf="@id/tv_file_name"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -43,6 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="5Гб"
+            android:textColor="@color/bali_deep"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>

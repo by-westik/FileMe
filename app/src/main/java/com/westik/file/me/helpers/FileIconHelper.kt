@@ -13,8 +13,15 @@ class FileIconHelper {
             "jpg", "png", "jpeg" -> {
                 ActivityCompat.getDrawable(context, R.drawable.ic_file_image)!!
             }
-            "pdf", "txt", "doc", "docx" -> {
+            "txt" -> {
                 ActivityCompat.getDrawable(context, R.drawable.ic_file_document)!!
+            }
+            "doc", "docx" -> {
+                ActivityCompat.getDrawable(context, R.drawable.ic_file_word)!!
+            }
+            "pdf" -> {
+                ActivityCompat.getDrawable(context, R.drawable.ic_file_pdf)!!
+
             }
             "xls", "xlsx" -> {
                 ActivityCompat.getDrawable(context, R.drawable.ic_file_excel)!!

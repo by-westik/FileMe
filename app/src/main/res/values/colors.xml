@@ -7,4 +7,16 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Custom Style -->
+
+    <color name="bluish_cyan">#264653</color>
+    <color name="azure_tide">#2A9D8F</color>
+    <color name="butterfly_blue">#219ebc</color>
+    <color name="golden_chalice">#E9C46A</color>
+    <color name="shrimp_cocktail">#F4A261</color>
+    <color name="bloodletter">#E76F51</color>
+    <color name="chimney_sweep">#263238</color>
+    <color name="bali_deep">#8A9094</color>
+    <color name="snowflake">#F0F0F0</color>
 </resources>

@@ -5,6 +5,8 @@ data class FileModel(
     val type: String,
     val lastModified: Long,
     val isDirectory: Boolean,
+    val isDirectoryEmpty: Boolean?,
+    val canRead: Boolean,
     var absolutePath: String,
     val size: String
 )

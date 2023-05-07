@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -17,16 +18,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.findViewTreeViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.button.MaterialButton
 import com.westik.file.me.adapters.FileAdapter
 import com.westik.file.me.databinding.FragmentHomeBinding
 import com.westik.file.me.dialogs.AskingPermissionDialog
+import com.westik.file.me.helpers.FileItemDecorator
 import com.westik.file.me.helpers.Files
 import com.westik.file.me.models.FileModel
 import java.io.File
@@ -41,6 +45,8 @@ class HomeFragment : Fragment() {
     private lateinit var fileAdapter: FileAdapter
     private lateinit var launcher: ActivityResultLauncher<String>
 
+    private lateinit var currentPath: String
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,25 +56,45 @@ class HomeFragment : Fragment() {
         val view = binding.root
         showPermissionDialog()
         setupRecyclerView()
+        // TODO вынести в константу
+        currentPath = "/storage/emulated/0"
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val file = File(currentPath).parentFile
+                if (file != null && file.canRead()) {
+                    fileAdapter.directoryOnClick(Files.getFiles(file.absolutePath))
+                    currentPath = file.absolutePath
+                }
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
+
     private fun setupRecyclerView(files: List<FileModel> = Files.getFiles()) {
-        Toast.makeText(requireContext(), "RV files size = ${files.size}", Toast.LENGTH_SHORT).show()
+        Log.d(TAG,"files size: ${files.size}")
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         fileAdapter = FileAdapter(files, this)
-        binding.rvFiles.apply {
-            this.layoutManager = linearLayoutManager
-            this.adapter = fileAdapter
+        fileAdapter.onItemClick = {path, _ ->
+                currentPath = path
         }
-        Toast.makeText(requireContext(), "RV2", Toast.LENGTH_SHORT).show()
+        binding.rvFiles.layoutManager = linearLayoutManager
+        binding.rvFiles.adapter = fileAdapter
+        ContextCompat.getDrawable(requireContext(), R.drawable.divider)?.let {
+            FileItemDecorator(it)
+        } ?.let {
+            binding.rvFiles.addItemDecoration(it)
+        }
 
 
     }
     private fun showPermissionDialog() {
-        if (isPermissionGranted(requireContext())) {
-            Toast.makeText(requireContext(), "PERMISSION GRANTED", Toast.LENGTH_SHORT).show()
-        } else {
+        if (!isPermissionGranted(requireContext())) {
             launcher = registerForActivityResult(ActivityResultContracts.RequestPermission()){}
             AskingPermissionDialog().createDialog(this, launcher)
         }

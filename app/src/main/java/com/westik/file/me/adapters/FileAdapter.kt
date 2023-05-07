@@ -4,17 +4,21 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.westik.file.me.HomeFragment
 import com.westik.file.me.R
 import com.westik.file.me.databinding.FileItemBinding
 import com.westik.file.me.databinding.FragmentHomeBinding
 import com.westik.file.me.helpers.FileIconHelper
 import com.westik.file.me.helpers.Files
 import com.westik.file.me.models.FileModel
+import java.text.SimpleDateFormat
 import java.util.ArrayList
+import java.util.Date
 
 class FileViewHolder(binding: FileItemBinding, private val context: Context) : RecyclerView.ViewHolder(binding.root) {
     private val tvFileName = binding.tvFileName
@@ -25,12 +29,16 @@ class FileViewHolder(binding: FileItemBinding, private val context: Context) : R
     fun bind(file: FileModel) {
         if (file.isDirectory) {
             tvFileSize.visibility = View.GONE
-            imvFileImage.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_folder))
+            if (!file.canRead) {
+                imvFileImage.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_folder_lock))
+            } else {
+                imvFileImage.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_folder))
+            }
         } else {
             tvFileSize.visibility = View.VISIBLE
             imvFileImage.setImageDrawable(FileIconHelper().getFileDrawable(context, file.type))
         }
-        tvFileDate.text = file.lastModified.toString()
+        tvFileDate.text = SimpleDateFormat.getDateInstance().format(Date(file.lastModified))
         tvFileName.text = file.name
         tvFileSize.text = file.size
     }
@@ -51,20 +59,28 @@ class FileAdapter(private var files: List<FileModel>, private val fragment: Frag
         holder.bind(file)
 
         holder.itemView.setOnClickListener {
+            if (!file.canRead) {
+                Toast.makeText(fragment.requireContext(), "Доступ запрещен", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
             if (file.isDirectory) {
-                onItemClick?.invoke(file.absolutePath, position)
-                directoryOnClick(Files.getFiles(file.absolutePath))
-            } else {
+                if (file.isDirectoryEmpty!!) {
 
+                    //TODO сделать пустой вид/фрагмент
+                    Toast.makeText(fragment.requireContext(), "Пустая папка", Toast.LENGTH_SHORT).show()
+                } else {
+                    onItemClick?.invoke(file.absolutePath, position)
+                    directoryOnClick(Files.getFiles(file.absolutePath))
+                }
+            } else {
                 // TODO сделать интент на открытие файла
-                // TODO обработать onBackPressed
             }
         }
 
 
     }
 
-    private fun directoryOnClick(arrayList: ArrayList<FileModel>){
+    fun directoryOnClick(arrayList: ArrayList<FileModel>){
         this.files = arrayList
         notifyDataSetChanged()
     }
