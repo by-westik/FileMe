@@ -1,12 +1,14 @@
 package com.westik.file.me.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.westik.file.me.HomeFragment
@@ -16,6 +18,7 @@ import com.westik.file.me.databinding.FragmentHomeBinding
 import com.westik.file.me.helpers.FileIconHelper
 import com.westik.file.me.helpers.Files
 import com.westik.file.me.models.FileModel
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Date
@@ -65,7 +68,6 @@ class FileAdapter(private var files: List<FileModel>, private val fragment: Frag
             }
             if (file.isDirectory) {
                 if (file.isDirectoryEmpty!!) {
-
                     //TODO сделать пустой вид/фрагмент
                     Toast.makeText(fragment.requireContext(), "Пустая папка", Toast.LENGTH_SHORT).show()
                 } else {
@@ -73,10 +75,15 @@ class FileAdapter(private var files: List<FileModel>, private val fragment: Frag
                     directoryOnClick(Files.getFiles(file.absolutePath))
                 }
             } else {
-                // TODO сделать интент на открытие файла
+                val apkUri = FileProvider.getUriForFile(fragment.requireContext(), fragment.requireContext().packageName + ".MyFileProvider", File(file.absolutePath))
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(apkUri, null)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+                }
+                fragment.startActivity(intent)
             }
         }
-
 
     }
 
