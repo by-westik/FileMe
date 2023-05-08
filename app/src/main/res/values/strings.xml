@@ -7,4 +7,12 @@
     <string name="dialog_title">Требуется разрешение</string>
     <string name="dialog_message">Для успешной работы приложения, пожалуйста, предоставьте разрешение на работу со внутренней памятью</string>
     <string name="permission_allow">Разрешить</string>
+
+    <!--File item strings -->
+    <string name="file_name">Название</string>
+    <string name="file_date">Дата</string>
+    <string name="file_size">5Гб</string>
+
+
+    <string name="empty_folder">Пустая папка</string>
 </resources>

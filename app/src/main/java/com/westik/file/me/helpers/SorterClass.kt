@@ -2,7 +2,7 @@ package com.westik.file.me.helpers
 
 import com.westik.file.me.models.FileModel
 
-class SorterClass() {
+class SorterClass {
 
     // TODO возможно стоит учитывать при сортировке папка/не папка
     companion object {

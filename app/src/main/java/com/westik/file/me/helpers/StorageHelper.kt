@@ -3,11 +3,13 @@ package com.westik.file.me.helpers
 import com.westik.file.me.models.FileModel
 import java.io.*
 
-class Files {
+class StorageHelper {
 
     companion object{
-        // TODO вынести путь к памяти в константу
-        fun getFiles(path: String = "/storage/emulated/0") : ArrayList<FileModel>{
+        /*
+            При таком варианте не учитывается, что у телефона может быть дополнительная память (micro SD)
+         */
+        fun getFiles(path: String = Constants.BASE_PATH) : ArrayList<FileModel>{
             var directories = mutableListOf<File>()
             var files = mutableListOf<File>()
 

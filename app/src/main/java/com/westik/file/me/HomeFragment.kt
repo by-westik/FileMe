@@ -1,21 +1,11 @@
 package com.westik.file.me
 
-import android.Manifest
 import android.content.ContentValues.TAG
-import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
-import android.view.animation.DecelerateInterpolator
-import android.view.animation.RotateAnimation
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,51 +13,43 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.radiobutton.MaterialRadioButton
 import com.westik.file.me.adapters.FileAdapter
 import com.westik.file.me.databinding.FilterBinding
 import com.westik.file.me.databinding.FragmentHomeBinding
 import com.westik.file.me.dialogs.AskingPermissionDialog
+import com.westik.file.me.helpers.AnimationHelper
+import com.westik.file.me.helpers.Constants
 import com.westik.file.me.helpers.FileItemDecorator
-import com.westik.file.me.helpers.Files
+import com.westik.file.me.helpers.StorageHelper
 import com.westik.file.me.helpers.SorterClass
 import com.westik.file.me.models.FileModel
 import java.io.File
 import java.util.Collections
-import java.util.Spliterator
 
 
 class HomeFragment : Fragment() {
 
-    private var files: List<FileModel> = Files.getFiles()
+    private var files: List<FileModel> = StorageHelper.getFiles()
+
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var fileAdapter: FileAdapter
     private lateinit var launcher: ActivityResultLauncher<String>
 
-    private lateinit var currentPath: String
-
-    private var startDegress = 0.0f
-    private var endDegrees = 180.0f
-    private lateinit var name: MaterialRadioButton
-    private lateinit var size: MaterialRadioButton
-    private lateinit var date: MaterialRadioButton
-    private lateinit var type: MaterialRadioButton
-    lateinit var bottomSheetDialog: BottomSheetDialog
+    private var currentPath: String = Constants.BASE_PATH
+    private lateinit var bottomSheetDialog: BottomSheetDialog
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view = binding.root
         showPermissionDialog()
         setupRecyclerView(files)
         setFilterData(files)
-        // TODO вынести в константу
-        currentPath = "/storage/emulated/0"
         return view
     }
 
@@ -78,7 +60,7 @@ class HomeFragment : Fragment() {
             override fun handleOnBackPressed() {
                 val file = File(currentPath).parentFile
                 if (file != null && file.canRead()) {
-                    fileAdapter.directoryOnClick(Files.getFiles(file.absolutePath))
+                    fileAdapter.directoryOnClick(StorageHelper.getFiles(file.absolutePath))
                     currentPath = file.absolutePath
                 }
             }
@@ -105,29 +87,17 @@ class HomeFragment : Fragment() {
 
     }
 
+    // TODO вынести куда-то создание диалога потом возможно
    fun setFilterData(files: List<FileModel> ) {
        binding.toolbar.setOnMenuItemClickListener {
+
            val dialogView = FilterBinding.inflate(layoutInflater)
-
-           name = dialogView.name
-           date = dialogView.date
-           size = dialogView.size
-           type = dialogView.type
-
            bottomSheetDialog = BottomSheetDialog(requireContext())
            bottomSheetDialog.setContentView(dialogView.root)
            bottomSheetDialog.show()
 
-           // TODO вынести анимацию куда-то
            dialogView.ascDesc.setOnClickListener {
-               val rotateAnimation = RotateAnimation(startDegress, endDegrees, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
-               rotateAnimation.interpolator = DecelerateInterpolator()
-               rotateAnimation.repeatCount = 0
-               rotateAnimation.duration = 800
-               rotateAnimation.fillAfter = true
-               val tmp = startDegress
-               startDegress = endDegrees
-               endDegrees = tmp
+               val rotateAnimation = AnimationHelper.createRotateAnimation()
                Collections.reverse(files)
                fileAdapter.notifyDataSetChanged()
                it.startAnimation(rotateAnimation)
@@ -162,18 +132,10 @@ class HomeFragment : Fragment() {
    }
 
     private fun showPermissionDialog() {
-        if (!isPermissionGranted(requireContext())) {
+        if (!AskingPermissionDialog().isPermissionGranted(requireContext())) {
             launcher = registerForActivityResult(ActivityResultContracts.RequestPermission()){}
             AskingPermissionDialog().createDialog(this, launcher)
         }
-    }
-
-    private fun isPermissionGranted(context: Context):Boolean{
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
-            return  Environment.isExternalStorageManager()
-        }
-        return (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
     }
 
 

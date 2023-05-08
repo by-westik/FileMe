@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-
     tools:context=".HomeFragment">
 
         <com.google.android.material.appbar.AppBarLayout
@@ -48,7 +47,7 @@
             android:id="@+id/empty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Пустая папка"
+            android:text="@string/empty_folder"
             android:textColor="@color/bali_deep"
             android:textSize="16sp"
             android:gravity="center"

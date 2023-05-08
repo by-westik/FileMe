@@ -1,26 +1,21 @@
 package com.westik.file.me.adapters
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.FileProvider
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.westik.file.me.HomeFragment
 import com.westik.file.me.R
 import com.westik.file.me.databinding.FileItemBinding
-import com.westik.file.me.helpers.FileIconHelper
-import com.westik.file.me.helpers.Files
+import com.westik.file.me.helpers.FileHelper
+import com.westik.file.me.helpers.StorageHelper
 import com.westik.file.me.models.FileModel
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
 
 class FileViewHolder(binding: FileItemBinding, private val context: Context) : RecyclerView.ViewHolder(binding.root){
+
     private val tvFileName = binding.tvFileName
     private val tvFileDate = binding.tvFileDate
     private val tvFileSize = binding.tvFileSize
@@ -36,21 +31,12 @@ class FileViewHolder(binding: FileItemBinding, private val context: Context) : R
             }
         } else {
             tvFileSize.visibility = View.VISIBLE
-            imvFileImage.setImageDrawable(FileIconHelper().getFileDrawable(context, file.type))
+            imvFileImage.setImageDrawable(FileHelper.getFileDrawable(context, file.type))
         }
-        tvFileDate.text = SimpleDateFormat.getDateInstance().format(Date(file.lastModified))
+        tvFileDate.text = FileHelper.getFileDate(file.lastModified)
         tvFileName.text = file.name
-        tvFileSize.text = getFileSize(file.size)
+        tvFileSize.text = FileHelper.getFileSize(file.size)
     }
-
-    //TODO может вынести в filehelper?
-    private fun getFileSize(length: Long): String {
-        val megaBytes = length.toDouble() / (1024 * 1024)
-        val str = String.format("%.2f", megaBytes)
-        return "$str Mb"
-    }
-
-
 }
 class FileAdapter(private var files: List<FileModel>, private val fragment: HomeFragment) : RecyclerView.Adapter<FileViewHolder>() {
 
@@ -77,42 +63,22 @@ class FileAdapter(private var files: List<FileModel>, private val fragment: Home
                     Toast.makeText(fragment.requireContext(), "Пустая папка", Toast.LENGTH_SHORT).show()
                 } else {
                     onItemClick?.invoke(file.absolutePath, position)
-                    directoryOnClick(Files.getFiles(file.absolutePath))
+                    directoryOnClick(StorageHelper.getFiles(file.absolutePath))
                 }
             } else {
-                openFile(file)
+                fragment.startActivity(FileHelper.openFile(file, fragment.requireContext()))
             }
         }
         if (!file.isDirectory) {
             holder.itemView.setOnLongClickListener {
-                sendFile(file)
+                fragment.startActivity(FileHelper.sendFile(file, fragment.requireContext()))
                 return@setOnLongClickListener true
             }
         }
 
     }
 
-    private fun openFile(file: FileModel) {
-        val apkUri = FileProvider.getUriForFile(fragment.requireContext(), fragment.requireContext().packageName + ".MyFileProvider", File(file.absolutePath))
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(apkUri, null)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        fragment.startActivity(intent)
-    }
-    private fun sendFile(file: FileModel) {
-        val apkUri = FileProvider.getUriForFile(
-            fragment.requireContext(),
-            fragment.requireContext().packageName + ".MyFileProvider",
-            File(file.absolutePath)
-        )
 
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            setDataAndType(apkUri, null)
-            putExtra(Intent.EXTRA_STREAM, apkUri)
-        }
-        fragment.startActivity(intent)
-    }
 
     fun directoryOnClick(arrayList: ArrayList<FileModel>){
         this.files = arrayList

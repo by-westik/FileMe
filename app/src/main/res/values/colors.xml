@@ -12,11 +12,18 @@
 
     <color name="bluish_cyan">#264653</color>
     <color name="azure_tide">#2A9D8F</color>
+    <color name="pine_scent">#4a7140</color>
+    <color name="laudable_lime">#90be6d</color>
+    <color name="drake_neck">#33658a</color>
     <color name="butterfly_blue">#219ebc</color>
     <color name="golden_chalice">#E9C46A</color>
     <color name="shrimp_cocktail">#F4A261</color>
-    <color name="bloodletter">#E76F51</color>
+    <color name="blood_letter">#E76F51</color>
+    <color name="chi_gong">#d62828</color>
+    <color name="pico_8_pink">#ff70a6</color>
+    <color name="lightish_purple">#9d4edd</color>
     <color name="chimney_sweep">#263238</color>
     <color name="bali_deep">#8A9094</color>
+    <color name="french_grey">#bfbdc1</color>
     <color name="snowflake">#F0F0F0</color>
 </resources>

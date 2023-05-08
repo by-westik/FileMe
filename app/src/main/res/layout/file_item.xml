@@ -14,15 +14,14 @@
             app:srcCompat="@drawable/ic_file"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:tint="?attr/colorPrimary" />
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
             android:id="@+id/tv_file_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxEms="11"
-            android:text="Название"
+            android:text="@string/file_name"
             android:layout_marginStart="10dp"
             android:textSize="16sp"
             android:textColor="@color/chimney_sweep"
@@ -34,7 +33,7 @@
             android:id="@+id/tv_file_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Дата"
+            android:text="@string/file_date"
             android:textSize="14sp"
             android:textColor="@color/bali_deep"
             android:layout_marginStart="10dp"
@@ -47,7 +46,7 @@
             android:id="@+id/tv_file_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="5Гб"
+            android:text="@string/file_size"
             android:textColor="@color/bali_deep"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
