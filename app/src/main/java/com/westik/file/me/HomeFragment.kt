@@ -6,11 +6,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.westik.file.me.adapters.FileAdapter
@@ -19,18 +21,32 @@ import com.westik.file.me.databinding.FragmentHomeBinding
 import com.westik.file.me.dialogs.AskingPermissionDialog
 import com.westik.file.me.helpers.AnimationHelper
 import com.westik.file.me.helpers.Constants
+import com.westik.file.me.helpers.FileHelper
 import com.westik.file.me.helpers.FileItemDecorator
 import com.westik.file.me.helpers.StorageHelper
 import com.westik.file.me.helpers.SorterClass
-import com.westik.file.me.models.FileModel
+import com.westik.file.me.models.FileEntity
+import com.westik.file.me.models.FileRepository
+import com.westik.file.me.models.FileRoomDatabase
+import com.westik.file.me.viewmodels.FileViewModel
+import com.westik.file.me.viewmodels.FileViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import java.io.File
 import java.util.Collections
 
 
 class HomeFragment : Fragment() {
 
-    private var files: List<FileModel> = StorageHelper.getFiles()
+    private val applicationScope = CoroutineScope(SupervisorJob())
+    private val database by lazy { FileRoomDatabase.getDatabase(requireContext(), applicationScope) }
+    private val repository by lazy { FileRepository(database.getFileDao()) }
 
+    private val viewModel : FileViewModel by viewModels {
+        FileViewModelFactory(repository)
+    }
+
+    private var files: List<FileEntity> = StorageHelper.getFilesFromPath()
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
@@ -40,6 +56,8 @@ class HomeFragment : Fragment() {
     private var currentPath: String = Constants.BASE_PATH
     private lateinit var bottomSheetDialog: BottomSheetDialog
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,10 +65,36 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view = binding.root
+
         showPermissionDialog()
-        setupRecyclerView(files)
+        setupRecyclerView()
+
+
+
         setFilterData(files)
         return view
+    }
+
+    private fun click(file: FileEntity) {
+        if (!file.canRead) {
+            Toast.makeText(requireContext(), "Доступ запрещен", Toast.LENGTH_LONG).show()
+
+        }
+        if (file.isDirectory) {
+            if (file.isDirectoryEmpty) {
+                Toast.makeText(requireContext(), "Пустая папка", Toast.LENGTH_SHORT).show()
+            } else {
+                currentPath = file.absolutePath
+                viewModel.updateCurrentFiles(currentPath)
+                viewModel.currentFiles.observe(viewLifecycleOwner) { files ->
+                    files.forEach {
+                    }
+                    fileAdapter.updateAdapter(files)
+                }
+            }
+        } else {
+            this.startActivity(FileHelper.openFile(file, requireContext()))
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,37 +104,53 @@ class HomeFragment : Fragment() {
             override fun handleOnBackPressed() {
                 val file = File(currentPath).parentFile
                 if (file != null && file.canRead()) {
-                    fileAdapter.directoryOnClick(StorageHelper.getFiles(file.absolutePath))
+                    viewModel.updateCurrentFiles(file.absolutePath)
+                    viewModel.currentFiles.observe(viewLifecycleOwner) {
+                        fileAdapter.updateAdapter(it)
+                    }
                     currentPath = file.absolutePath
                 }
             }
+        }
+        if (AskingPermissionDialog().isPermissionGranted(requireContext())) {
+            setupRecyclerView()
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
     }
 
-    private fun setupRecyclerView(files: List<FileModel>) {
-        Log.d(TAG,"files size: ${files.size}")
-        val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        fileAdapter = FileAdapter(files, this)
-        fileAdapter.onItemClick = {path, _ ->
-                currentPath = path
+    override fun onResume() {
+        super.onResume()
+        if (AskingPermissionDialog().isPermissionGranted(requireContext())) {
+            setupRecyclerView()
         }
-        binding.rvFiles.layoutManager = linearLayoutManager
-        binding.rvFiles.adapter = fileAdapter
-        ContextCompat.getDrawable(requireContext(), R.drawable.divider)?.let {
-            FileItemDecorator(it)
-        } ?.let {
-            binding.rvFiles.addItemDecoration(it)
+    }
+    private fun setupRecyclerView() {
+        if (AskingPermissionDialog().isPermissionGranted(requireContext())) {
+            val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            val itemClick = { file: FileEntity -> click(file)}
+            fileAdapter = FileAdapter(files, this, itemClick)
+
+            binding.rvFiles.layoutManager = linearLayoutManager
+            binding.rvFiles.adapter = fileAdapter
+            viewModel.currentFiles.observe(viewLifecycleOwner) {
+                fileAdapter.updateAdapter(it)
+            }
+
+            ContextCompat.getDrawable(requireContext(), R.drawable.divider)?.let {
+                FileItemDecorator(it)
+            } ?.let {
+                binding.rvFiles.addItemDecoration(it)
+            }
         }
+
 
     }
 
     // TODO вынести куда-то создание диалога потом возможно
-   fun setFilterData(files: List<FileModel> ) {
+   fun setFilterData(files: List<FileEntity> ) {
        binding.toolbar.setOnMenuItemClickListener {
-
            val dialogView = FilterBinding.inflate(layoutInflater)
            bottomSheetDialog = BottomSheetDialog(requireContext())
            bottomSheetDialog.setContentView(dialogView.root)
@@ -99,7 +159,7 @@ class HomeFragment : Fragment() {
            dialogView.ascDesc.setOnClickListener {
                val rotateAnimation = AnimationHelper.createRotateAnimation()
                Collections.reverse(files)
-               fileAdapter.notifyDataSetChanged()
+               fileAdapter.updateAdapter(files)
                it.startAnimation(rotateAnimation)
            }
            // TODO посмотреть про notifyDataSetChanged
@@ -107,21 +167,21 @@ class HomeFragment : Fragment() {
                when (checkedId) {
                    R.id.name -> {
                        Collections.sort(files, SorterClass.sortByName)
-                       fileAdapter.notifyDataSetChanged()
+                       fileAdapter.updateAdapter(files)
                    }
                    R.id.size -> {
                        Collections.sort(files, SorterClass.sortBySize)
-                       fileAdapter.notifyDataSetChanged()
+                       fileAdapter.updateAdapter(files)
                    }
 
                    R.id.date -> {
                        Collections.sort(files, SorterClass.sortByDate)
-                       fileAdapter.notifyDataSetChanged()
+                       fileAdapter.updateAdapter(files)
                    }
 
                    R.id.type -> {
                        Collections.sort(files, SorterClass.sortByType)
-                       fileAdapter.notifyDataSetChanged()
+                       fileAdapter.updateAdapter(files)
                    }
                }
            }
@@ -135,6 +195,8 @@ class HomeFragment : Fragment() {
         if (!AskingPermissionDialog().isPermissionGranted(requireContext())) {
             launcher = registerForActivityResult(ActivityResultContracts.RequestPermission()){}
             AskingPermissionDialog().createDialog(this, launcher)
+        } else {
+            setupRecyclerView()
         }
     }
 

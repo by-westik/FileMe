@@ -11,4 +11,5 @@
         android:label="fragment_home"
         tools:layout="@layout/fragment_home">
     </fragment>
+
 </navigation>

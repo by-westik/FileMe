@@ -1,71 +1,80 @@
 package com.westik.file.me.helpers
 
-import com.westik.file.me.models.FileModel
-import java.io.*
+import com.westik.file.me.models.FileEntity
+import java.io.File
+import java.util.LinkedList
 
 class StorageHelper {
 
-    companion object{
+    companion object {
         /*
             При таком варианте не учитывается, что у телефона может быть дополнительная память (micro SD)
          */
-        fun getFiles(path: String = Constants.BASE_PATH) : ArrayList<FileModel>{
-            var directories = mutableListOf<File>()
-            var files = mutableListOf<File>()
 
-            val filesArray = File(path).listFiles() as Array<File>
-            filesArray.forEach {file ->
-                if (!file.isHidden){
-                    if (file.isDirectory){
-                        directories.add(file)
-                    } else {
-                        files.add(file)
+                //TODO добавить в README что нельзя получить дату создания файла, можно только изменения
+        fun breadthFirstSearchFiles(path: String = Constants.BASE_PATH): List<FileEntity> {
+            val result = mutableListOf<FileEntity>()
+            val queue = LinkedList<File>()
+
+            val node = File(path)
+
+            queue.add(node)
+            // TODO написать почему тут такой проход
+            while (!queue.isEmpty()) {
+                val current = queue.poll()
+                if (current != null) {
+                    if (!current.listFiles().isNullOrEmpty()) {
+                        current.listFiles()?.forEach {
+                            if (!it.isHidden) {
+                                if (it.isDirectory) {
+                                    queue.add(it)
+                                }
+                                result.add(
+                                    FileEntity(
+                                        id = 0,
+                                        name = it.name,
+                                        lastModified = it.lastModified(),
+                                        size = it.length(),
+                                        type = it.extension,
+                                        absolutePath = it.absolutePath,
+                                        parentPath = it.parent,
+                                        isDirectory = it.isDirectory,
+                                        isDirectoryEmpty = if (it.isDirectory) it.list().isNullOrEmpty() else false,
+                                        canRead = it.canRead()
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
             }
-
-
-            directories = directories.sortedWith(compareBy {
-                it.name
-            }).toMutableList()
-
-            files = files.sortedWith(compareBy {
-                it.name
-            }).toMutableList()
-
-            directories.addAll(files)
-
-            val result = arrayListOf<FileModel>()
-            directories.forEach {
-                //TODO добавить в README что нельзя получить дату создания файла, можно только изменения
-              /*  val filePath = Paths.get(it.absolutePath)
-                val attributes: BasicFileAttributes = Files.readAttributes(filePath, BasicFileAttributes::class.java)
-                val dateFormatter =  DateTimeFormatter.ofPattern("dd-MM-yyyy")
-                val creationTime = attributes.creationTime()
-                val formatTime = creationTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(dateFormatter)
-                Log.d(TAG,"file name = ${it.name} creationTime = $formatTime")
-                val simpleDataFormat =  SimpleDateFormat.getDateInstance().format(Date(it.lastModified()))
-                Log.d(TAG,"file name = ${it.name} lastModifedTime = $simpleDataFormat")*/
-              //  it.list().size == 0
-
-                result.add(
-                    FileModel
-                        (
-                        name = it.name,
-                        type = it.extension.lowercase(),
-                        lastModified = it.lastModified(),
-                        canRead = it.canRead(),
-                        isDirectory = it.isDirectory,
-                        isDirectoryEmpty = if (it.isDirectory) it.list().isNullOrEmpty() else false,
-                        absolutePath = it.absolutePath,
-                        size = it.length())
-                )
-            }
-
             return result
         }
 
 
-    }
+        fun getFilesFromPath(path: String = Constants.BASE_PATH) : List<FileEntity> {
+            val result = mutableListOf<FileEntity>()
 
+            File(path).listFiles()?.forEach {
+                if (!it.isHidden) {
+                    result.add(
+                        FileEntity(
+                            id = 0,
+                            name = it.name,
+                            lastModified = it.lastModified(),
+                            size = it.length(),
+                            type = it.extension,
+                            absolutePath = it.absolutePath,
+                            parentPath = it.parent,
+                            isDirectory = it.isDirectory,
+                            isDirectoryEmpty = if (it.isDirectory) it.list().isNullOrEmpty() else false,
+                            canRead = it.canRead()
+                        )
+                    )
+                }
+            }
+
+            return result
+        }
+    }
 }
