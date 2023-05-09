@@ -1,4 +1,4 @@
-package com.westik.file.me
+package com.westik.file.me.helpers
 
 import androidx.core.content.FileProvider
 

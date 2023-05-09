@@ -1,4 +1,4 @@
-package com.westik.file.me
+package com.westik.file.me.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.westik.file.me.R
 import com.westik.file.me.adapters.FileAdapter
 import com.westik.file.me.databinding.FilterBinding
 import com.westik.file.me.databinding.FragmentHomeBinding
@@ -24,25 +25,18 @@ import com.westik.file.me.helpers.FileItemDecorator
 import com.westik.file.me.helpers.StorageHelper
 import com.westik.file.me.helpers.SorterClass
 import com.westik.file.me.models.FileEntity
-import com.westik.file.me.models.FileRepository
-import com.westik.file.me.models.FileRoomDatabase
 import com.westik.file.me.viewmodels.FileViewModel
-import com.westik.file.me.viewmodels.FileViewModelFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.util.Collections
 
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
-    private val applicationScope = CoroutineScope(SupervisorJob())
-    private val database by lazy { FileRoomDatabase.getDatabase(requireContext(), applicationScope) }
-    private val repository by lazy { FileRepository(database.getFileDao()) }
 
-    private val viewModel : FileViewModel by viewModels {
-        FileViewModelFactory(repository)
-    }
+
+    private val viewModel : FileViewModel by viewModels()
 
     private var files: List<FileEntity> = StorageHelper.getFilesFromPath()
     private var _binding: FragmentHomeBinding? = null
@@ -150,6 +144,9 @@ class HomeFragment : Fragment() {
            bottomSheetDialog = BottomSheetDialog(requireContext())
            bottomSheetDialog.setContentView(dialogView.root)
            bottomSheetDialog.show()
+
+           // TODO исправить баг с тем, что при сортироке папок сортируется главная папка
+           // TODO исправить, что при первом запуксе и первой сортировке пропадают файлы почему-то
 
            dialogView.ascDesc.setOnClickListener {
                val rotateAnimation = AnimationHelper.createRotateAnimation()

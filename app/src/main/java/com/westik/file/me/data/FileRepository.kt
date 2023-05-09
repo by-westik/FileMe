@@ -1,9 +1,12 @@
-package com.westik.file.me.models
+package com.westik.file.me.data
 
 import androidx.annotation.WorkerThread
+import com.westik.file.me.data.db.FileDao
+import com.westik.file.me.models.FileEntity
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class FileRepository(private val fileDao: FileDao) {
+class FileRepository @Inject constructor(private val fileDao: FileDao) {
 
     val allFiles: Flow<List<FileEntity>> = fileDao.getAllFiles()
 

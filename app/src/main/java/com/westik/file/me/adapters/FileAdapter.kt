@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
-import com.westik.file.me.HomeFragment
+import com.westik.file.me.fragments.HomeFragment
 import com.westik.file.me.R
 import com.westik.file.me.databinding.FileItemBinding
 import com.westik.file.me.helpers.FileHelper

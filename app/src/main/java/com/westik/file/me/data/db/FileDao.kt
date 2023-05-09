@@ -1,15 +1,11 @@
-package com.westik.file.me.models
+package com.westik.file.me.data.db
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
+import com.westik.file.me.models.FileEntity
 import kotlinx.coroutines.flow.Flow
-import java.io.File
-import kotlin.random.Random
 
 @Dao
 interface FileDao {

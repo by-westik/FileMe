@@ -2,8 +2,7 @@ package com.westik.file.me
 
 import android.app.Application
 import android.content.Context
+import dagger.hilt.android.HiltAndroidApp
 
-class App : Application() {
-
-
-}
+@HiltAndroidApp
+class App : Application()

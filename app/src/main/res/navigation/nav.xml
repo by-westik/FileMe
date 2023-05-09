@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.westik.file.me.HomeFragment"
+        android:name="com.westik.file.me.fragments.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home">
     </fragment>
