@@ -9,10 +9,10 @@ class SorterClass {
 
         var sortByName = Comparator<FileEntity> { o1, o2 -> o1.name.compareTo(o2.name) }
 
-        val sortByType = Comparator<FileEntity> { o1, o2 -> o1.type.compareTo(o2.type) }
-
+        val sortByType = Comparator<FileEntity> { o1, o2 -> o1.absolutePath.compareTo(o2.absolutePath) }
+//TODO исправить потом
         // TODO считать размер папок и сортировать по ним тоже
-        val sortBySize = Comparator<FileEntity> { o1, o2 -> (o1.size - o2.size).toInt() }
+        val sortBySize = Comparator<FileEntity> { o1, o2 -> (o1.lastModified - o2.lastModified).toInt() }
 
         val sortByDate = Comparator<FileEntity> { o1, o2 -> (o1.lastModified - o2.lastModified).toInt() }
     }

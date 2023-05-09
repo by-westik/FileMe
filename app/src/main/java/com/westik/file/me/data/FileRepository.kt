@@ -1,5 +1,7 @@
 package com.westik.file.me.data
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.annotation.WorkerThread
 import com.westik.file.me.data.db.FileDao
 import com.westik.file.me.models.FileEntity
@@ -17,7 +19,9 @@ class FileRepository @Inject constructor(private val fileDao: FileDao) {
     }
 
     suspend fun updateHashCodes(hashCode: Int, id: Int) {
+        Log.d(TAG, "START UPATE HASHCODE")
         fileDao.updateHashCodes(hashCode, id)
+        Log.d(TAG, "START UPATE HASHCODE")
     }
 
     fun getFilesFromDirectory(path: String) : Flow<List<FileEntity>> {

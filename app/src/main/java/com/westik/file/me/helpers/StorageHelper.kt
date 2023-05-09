@@ -39,14 +39,14 @@ class StorageHelper {
                                         id = 0,
                                         name = it.name,
                                         lastModified = it.lastModified(),
-                                        size = it.length(),
-                                        type = it.extension,
+                                 //       size = it.length(),
+                                     //   type = it.extension,
                                         absolutePath = it.absolutePath,
                                         parentPath = it.parent,
-                                        isDirectory = it.isDirectory,
+                                        /*isDirectory = it.isDirectory,
                                         isDirectoryEmpty = if (it.isDirectory) it.list().isNullOrEmpty() else false,
-                                        canRead = it.canRead(),
-                                        hashC0de = it.lastModified().hashCode()
+                                        canRead = it.canRead(),*/
+                                        hashC0de = 0
                                     )
                                 )
                             }
@@ -67,14 +67,14 @@ class StorageHelper {
                             id = 0,
                             name = it.name,
                             lastModified = it.lastModified(),
-                            size = it.length(),
-                            type = it.extension,
-                            absolutePath = it.absolutePath,
+                         //   size = it.length(),
+                          //  type = it.extension,
+                            absolutePath = it.absolutePath,//,
                             parentPath = it.parent,
-                            isDirectory = it.isDirectory,
+                           /* isDirectory = it.isDirectory,
                             isDirectoryEmpty = if (it.isDirectory) it.list().isNullOrEmpty() else false,
-                            canRead = it.canRead(),
-                            hashC0de = it.lastModified().hashCode()
+                            canRead = it.canRead(),*/
+                            hashC0de = 0
                       //      checksum = checksum
                         )
                     )

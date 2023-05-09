@@ -10,6 +10,19 @@
         android:name="com.westik.file.me.fragments.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home">
+
+        <action
+            android:id="@+id/action_homeFragment_to_changeFilesFragment"
+            app:destination="@id/changesFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true"
+            />
     </fragment>
+
+    <fragment
+        android:id="@+id/changesFragment"
+        android:name="com.westik.file.me.fragments.ChangeFilesFragment"
+        android:label="fragment_changes"
+        tools:layout="@layout/fragment_change_files"/>
 
 </navigation>
