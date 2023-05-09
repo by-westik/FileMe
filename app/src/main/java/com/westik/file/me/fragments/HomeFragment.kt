@@ -1,6 +1,9 @@
 package com.westik.file.me.fragments
 
+import android.content.ContentValues.PARCELABLE_WRITE_RETURN_VALUE
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,7 +41,7 @@ class HomeFragment : Fragment() {
 
     private val viewModel : FileViewModel by viewModels()
 
-    private var files: List<FileEntity> = StorageHelper.getFilesFromPath()
+    private var files: List<FileEntity> = listOf()
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
@@ -48,6 +51,7 @@ class HomeFragment : Fragment() {
     private var currentPath: String = Constants.BASE_PATH
     private lateinit var bottomSheetDialog: BottomSheetDialog
 
+    private var updatedFiles = mutableListOf<FileEntity>()
 
 
     override fun onCreateView(
@@ -58,7 +62,6 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view = binding.root
         showPermissionDialog()
-        setupRecyclerView()
         setFilterData()
         return view
     }
@@ -82,6 +85,11 @@ class HomeFragment : Fragment() {
         } else {
             this.startActivity(FileHelper.openFile(file, requireContext()))
         }
+    }
+
+    private fun change(file: FileEntity) {
+        updatedFiles.add(file)
+        Log.d(TAG, "File added")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -113,12 +121,18 @@ class HomeFragment : Fragment() {
         if (AskingPermissionDialog().isPermissionGranted(requireContext())) {
             setupRecyclerView()
         }
+        val list = mutableListOf<Pair<Int, Int>>()
+        updatedFiles.forEach {
+            list.add(Pair(it.hashCode(), it.id))
+        }
+        viewModel.updateHashCode(list)
     }
     private fun setupRecyclerView() {
         if (AskingPermissionDialog().isPermissionGranted(requireContext())) {
             val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            val changeHashCode = {file : FileEntity -> change(file)}
             val itemClick = { file: FileEntity -> click(file)}
-            fileAdapter = FileAdapter(files, this, itemClick)
+            fileAdapter = FileAdapter(files, this, itemClick, changeHashCode)
 
             binding.rvFiles.layoutManager = linearLayoutManager
             binding.rvFiles.adapter = fileAdapter
@@ -136,6 +150,16 @@ class HomeFragment : Fragment() {
         }
 
 
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "OnStop")
+        val list = mutableListOf<Pair<Int, Int>>()
+        updatedFiles.forEach {
+            list.add(Pair(File(it.absolutePath).lastModified().hashCode(), it.id))
+        }
+        viewModel.updateHashCode(list)
     }
 
     // TODO вынести куда-то создание диалога потом возможно
@@ -177,12 +201,14 @@ class HomeFragment : Fragment() {
        }
    }
 
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
     private fun showPermissionDialog() {
         if (!AskingPermissionDialog().isPermissionGranted(requireContext())) {
             launcher = registerForActivityResult(ActivityResultContracts.RequestPermission()){}
             AskingPermissionDialog().createDialog(this, launcher)
-        } else {
-            setupRecyclerView()
         }
     }
 

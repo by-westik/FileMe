@@ -34,6 +34,7 @@ class StorageHelper {
                                 if (it.isDirectory) {
                                     queue.add(it)
                                 }
+
                                 result.add(
                                     FileEntity(
                                         id = 0,
@@ -56,7 +57,7 @@ class StorageHelper {
             }
             return result
         }
-
+/*
         fun getFilesFromPath(path: String = Constants.BASE_PATH) : List<FileEntity> {
             val result = mutableListOf<FileEntity>()
 
@@ -82,6 +83,6 @@ class StorageHelper {
             }
 
             return result
-        }
+        }*/
     }
 }

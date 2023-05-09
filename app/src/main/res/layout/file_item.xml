@@ -42,6 +42,16 @@
             app:layout_constraintStart_toEndOf="@id/imv_file_image"
             />
 
+        <ImageView
+            android:id="@+id/imv_is_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            app:srcCompat="@drawable/ic_file"
+            app:layout_constraintTop_toTopOf="@id/tv_file_name"
+            app:layout_constraintStart_toEndOf="@id/tv_file_name"
+            app:layout_constraintBottom_toBottomOf="@id/tv_file_name"/>
+
         <TextView
             android:id="@+id/tv_file_size"
             android:layout_width="wrap_content"

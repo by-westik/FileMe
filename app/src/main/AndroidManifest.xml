@@ -32,8 +32,6 @@
         </activity>
 
 
-        <service android:name=".helpers.MyService"/>
-
         <provider
             android:authorities="com.westik.file.me.helpers.MyFileProvider"
             android:name="androidx.core.content.FileProvider"

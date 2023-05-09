@@ -13,14 +13,13 @@ interface FileDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertFile(file: FileEntity)
 
-    @Query("SELECT * FROM files")
-    fun getAllFiles(): Flow<List<FileEntity>>
+  //  @Query("SELECT * FROM files")
+//    fun getAllFiles(): Flow<List<FileEntity>>
 
     @Query("SELECT * FROM files WHERE parent_path = :path ORDER BY name ASC")
     fun getFilesFromDirectory(path: String): Flow<List<FileEntity>>
     @Query("UPDATE files SET hash_code = :hashCode where file_id = :id")
-    suspend fun updateHashCodes(hashCode: Int, id: Int)
-
+    suspend fun updateHashCode(hashCode: Int, id: Int)
 
     @Query("DELETE FROM files")
     suspend fun deleteAll()

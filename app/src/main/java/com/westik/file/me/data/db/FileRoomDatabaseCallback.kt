@@ -12,11 +12,11 @@ import javax.inject.Provider
 
 class FileRoomDatabaseCallback(private val provider: Provider<FileDao>) : RoomDatabase.Callback() {
 
-    private val coroutineScope = CoroutineScope(SupervisorJob())
+    private val coroutineScopeForAllDb = CoroutineScope(SupervisorJob())
 
     override fun onCreate(db: SupportSQLiteDatabase) {
         super.onCreate(db)
-        coroutineScope.launch {
+        coroutineScopeForAllDb.launch {
             Log.d(TAG, "START")
             populateDatabase()
             Log.d(TAG, "END")

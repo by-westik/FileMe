@@ -21,6 +21,6 @@ data class FileEntity (
     @ColumnInfo(name = "is_directory") val isDirectory: Boolean,
     @ColumnInfo(name = "is_directory_empty") val isDirectoryEmpty: Boolean,
     @ColumnInfo(name = "can_read") val canRead: Boolean,
-    @ColumnInfo(name = "hash_code") val hashC0de: Int
+    @ColumnInfo(name = "hash_code") val hashC0de:Int
     //@ColumnInfo(name = "checksum") val checksum: String
 )

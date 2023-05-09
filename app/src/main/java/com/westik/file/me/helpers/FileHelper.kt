@@ -1,8 +1,10 @@
 package com.westik.file.me.helpers
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import com.westik.file.me.R
@@ -52,7 +54,7 @@ class FileHelper {
         }
 
         fun openFile(file: FileEntity, context: Context) : Intent {
-            val apkUri = FileProvider.getUriForFile(context, context.packageName + ".MyFileProvider", File(file.absolutePath))
+            val apkUri = FileProvider.getUriForFile(context, context.packageName + ".helpers.MyFileProvider", File(file.absolutePath))
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(apkUri, null)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -60,9 +62,10 @@ class FileHelper {
             return intent
         }
         fun sendFile(file: FileEntity, context: Context) : Intent {
+            Log.d(TAG, "${context.packageName}")
             val apkUri = FileProvider.getUriForFile(
                 context,
-                context.packageName + ".MyFileProvider",
+                context.packageName + ".helpers.MyFileProvider",
                 File(file.absolutePath)
             )
 

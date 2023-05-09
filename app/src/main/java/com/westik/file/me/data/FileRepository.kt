@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class FileRepository @Inject constructor(private val fileDao: FileDao) {
 
-    val allFiles: Flow<List<FileEntity>> = fileDao.getAllFiles()
+    //val allFiles: Flow<List<FileEntity>> = fileDao.getAllFiles()
 
     @Suppress("RedunantSuperModifier")
     @WorkerThread
@@ -16,9 +16,10 @@ class FileRepository @Inject constructor(private val fileDao: FileDao) {
         fileDao.insertFile(file)
     }
 
-    suspend fun updateHashCodes(hashCode: Int, id: Int) {
-        fileDao.updateHashCodes(hashCode, id)
+    suspend fun updateHashCode(hashCode: Int, id: Int) {
+        fileDao.updateHashCode(hashCode, id)
     }
+
 
     fun getFilesFromDirectory(path: String) : Flow<List<FileEntity>> {
 
