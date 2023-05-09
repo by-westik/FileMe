@@ -41,6 +41,7 @@
     <RadioGroup
         android:id="@+id/filter_group"
         android:padding="10dp"
+        android:checkedButton="@id/name"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

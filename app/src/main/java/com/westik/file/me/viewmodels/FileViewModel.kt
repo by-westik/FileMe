@@ -20,7 +20,6 @@ class FileViewModel @Inject constructor(private val fileRepository: FileReposito
     fun updateCurrentFiles(path: String) {
         Log.d(TAG, "START UPDATE FILES" )
         currentFiles =  fileRepository.getFilesFromDirectory(path).asLiveData()
-
         Log.d(TAG, "END UPDATE FILES" )
     }
 

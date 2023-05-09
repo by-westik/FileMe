@@ -16,7 +16,7 @@ interface FileDao {
     @Query("SELECT * FROM files")
     fun getAllFiles(): Flow<List<FileEntity>>
 
-    @Query("SELECT * FROM files WHERE parent_path = :path")
+    @Query("SELECT * FROM files WHERE parent_path = :path ORDER BY name ASC")
     fun getFilesFromDirectory(path: String): Flow<List<FileEntity>>
     @Query("UPDATE files SET hash_code = :hashCode where file_id = :id")
     suspend fun updateHashCodes(hashCode: Int, id: Int)

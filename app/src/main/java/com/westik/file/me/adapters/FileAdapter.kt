@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.westik.file.me.fragments.HomeFragment
 import com.westik.file.me.R
@@ -36,10 +37,13 @@ class FileViewHolder(binding: FileItemBinding, private val context: Context) : R
         tvFileSize.text = FileHelper.getFileSize(file.size)
     }
 }
+
+
 class FileAdapter(
     private var files: List<FileEntity>,
     private val fragment: HomeFragment,
     private val onItemClick: (file: FileEntity) -> Unit) : RecyclerView.Adapter<FileViewHolder>() {
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
         return FileViewHolder(FileItemBinding.inflate(
@@ -69,12 +73,4 @@ class FileAdapter(
         notifyDataSetChanged()
     }
 
-
-
-    fun directoryOnClick(arrayList: ArrayList<FileEntity>){
-        this.files = arrayList
-        // TODO мне пока это не нравится, надо как-то потом переделать
-      //  fragment.setFilterData(this.files)
-      //  notifyDataSetChanged()
-    }
 }

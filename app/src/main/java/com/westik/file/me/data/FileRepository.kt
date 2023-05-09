@@ -22,7 +22,6 @@ class FileRepository @Inject constructor(private val fileDao: FileDao) {
 
     fun getFilesFromDirectory(path: String) : Flow<List<FileEntity>> {
 
-
         return fileDao.getFilesFromDirectory(path)
     }
 

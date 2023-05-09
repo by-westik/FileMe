@@ -7,29 +7,11 @@ import androidx.room.RoomDatabase
 import com.westik.file.me.models.FileEntity
 import javax.inject.Provider
 
+// TODO вынести название и версию в константы
 @Database(entities = [FileEntity::class], version = 1, exportSchema = false)
 abstract class FileRoomDatabase :  RoomDatabase() {
 
     abstract fun getFileDao() : FileDao
-
-  /*  private class FileRoomDatabaseCallback(
-        private val scope: CoroutineScope,
-        private val context: Context
-    ) : Callback() {
-        override fun onCreate(db: SupportSQLiteDatabase) {
-            super.onCreate(db)
-            INSTANCE?.let { database ->
-               // scope.launch {
-                    val fileDao = database.getFileDao()
-                    Log.d(TAG, "Start insert")
-                    fileDao.insertFiles(StorageHelper.breadthFirstSearchFiles())
-                    Log.d(TAG, "end insert")
-
-               // }
-            }
-        }
-
-    }*/
 
     companion object {
         @Volatile

@@ -74,9 +74,8 @@ class HomeFragment : Fragment() {
             } else {
                 currentPath = file.absolutePath
                 viewModel.updateCurrentFiles(currentPath)
-                viewModel.currentFiles.observe(viewLifecycleOwner) { files ->
-                    files.forEach {
-                    }
+                viewModel.currentFiles.observe(viewLifecycleOwner) {
+                    files = it
                     fileAdapter.updateAdapter(files)
                 }
             }
@@ -94,7 +93,8 @@ class HomeFragment : Fragment() {
                 if (file != null && file.canRead()) {
                     viewModel.updateCurrentFiles(file.absolutePath)
                     viewModel.currentFiles.observe(viewLifecycleOwner) {
-                        fileAdapter.updateAdapter(it)
+                        files = it
+                        fileAdapter.updateAdapter(files)
                     }
                     currentPath = file.absolutePath
                 }
@@ -123,7 +123,8 @@ class HomeFragment : Fragment() {
             binding.rvFiles.layoutManager = linearLayoutManager
             binding.rvFiles.adapter = fileAdapter
             viewModel.currentFiles.observe(viewLifecycleOwner) {
-                fileAdapter.updateAdapter(it)
+                files = it
+                fileAdapter.updateAdapter(files)
             }
 
             ContextCompat.getDrawable(requireContext(), R.drawable.divider)?.let {
@@ -138,15 +139,12 @@ class HomeFragment : Fragment() {
     }
 
     // TODO вынести куда-то создание диалога потом возможно
-   fun setFilterData() {
+    private fun setFilterData() {
        binding.toolbar.setOnMenuItemClickListener {
            val dialogView = FilterBinding.inflate(layoutInflater)
            bottomSheetDialog = BottomSheetDialog(requireContext())
            bottomSheetDialog.setContentView(dialogView.root)
            bottomSheetDialog.show()
-
-           // TODO исправить баг с тем, что при сортироке папок сортируется главная папка
-           // TODO исправить, что при первом запуксе и первой сортировке пропадают файлы почему-то
 
            dialogView.ascDesc.setOnClickListener {
                val rotateAnimation = AnimationHelper.createRotateAnimation()
@@ -159,25 +157,21 @@ class HomeFragment : Fragment() {
                when (checkedId) {
                    R.id.name -> {
                        Collections.sort(files, SorterClass.sortByName)
-                       fileAdapter.updateAdapter(files)
                    }
                    R.id.size -> {
                        Collections.sort(files, SorterClass.sortBySize)
-                       fileAdapter.updateAdapter(files)
                    }
 
                    R.id.date -> {
                        Collections.sort(files, SorterClass.sortByDate)
-                       fileAdapter.updateAdapter(files)
                    }
 
                    R.id.type -> {
                        Collections.sort(files, SorterClass.sortByType)
-                       fileAdapter.updateAdapter(files)
                    }
                }
+               fileAdapter.updateAdapter(files)
            }
-
 
            return@setOnMenuItemClickListener true
        }
