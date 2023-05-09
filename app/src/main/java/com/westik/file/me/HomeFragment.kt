@@ -1,8 +1,6 @@
 package com.westik.file.me
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,13 +63,9 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view = binding.root
-
         showPermissionDialog()
         setupRecyclerView()
-
-
-
-        setFilterData(files)
+        setFilterData()
         return view
     }
 
@@ -143,13 +137,14 @@ class HomeFragment : Fragment() {
             } ?.let {
                 binding.rvFiles.addItemDecoration(it)
             }
+
         }
 
 
     }
 
     // TODO вынести куда-то создание диалога потом возможно
-   fun setFilterData(files: List<FileEntity> ) {
+   fun setFilterData() {
        binding.toolbar.setOnMenuItemClickListener {
            val dialogView = FilterBinding.inflate(layoutInflater)
            bottomSheetDialog = BottomSheetDialog(requireContext())

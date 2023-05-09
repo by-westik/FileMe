@@ -6,7 +6,10 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import java.io.File
+import kotlin.random.Random
 
 @Dao
 interface FileDao {
@@ -19,16 +22,18 @@ interface FileDao {
 
     @Query("SELECT * FROM files WHERE parent_path = :path")
     fun getFilesFromDirectory(path: String): Flow<List<FileEntity>>
+    @Query("UPDATE files SET hash_code = :hashCode where file_id = :id")
+    suspend fun updateHashCodes(hashCode: Int, id: Int)
 
 
     @Query("DELETE FROM files")
     suspend fun deleteAll()
 
-    suspend fun insertAllFiles(files: List<FileEntity>) {
-        Log.d(TAG, "START INSERT files size = ${files.size}")
+    suspend fun insertFiles(files: List<FileEntity>) {
         files.forEach {
             insertFile(it)
         }
-        Log.d(TAG, "files size = ${files.size} END INSERT")
     }
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(vararg file: FileEntity)
 }

@@ -13,6 +13,9 @@ class FileRepository(private val fileDao: FileDao) {
         fileDao.insertFile(file)
     }
 
+    suspend fun updateHashCodes(hashCode: Int, id: Int) {
+        fileDao.updateHashCodes(hashCode, id)
+    }
 
     fun getFilesFromDirectory(path: String) : Flow<List<FileEntity>> {
 

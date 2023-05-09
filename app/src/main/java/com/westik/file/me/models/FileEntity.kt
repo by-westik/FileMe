@@ -7,7 +7,11 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "files")
 data class FileEntity (
 
-    @PrimaryKey(autoGenerate = true) val id: Int,
+    // TODO продумать лучше сущность, может что-то убрать
+
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "file_id")
+    val id: Int,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "last_modified") val lastModified: Long,
     @ColumnInfo(name = "size") val size: Long,
@@ -16,5 +20,7 @@ data class FileEntity (
     @ColumnInfo(name = "parent_path") val parentPath: String?,
     @ColumnInfo(name = "is_directory") val isDirectory: Boolean,
     @ColumnInfo(name = "is_directory_empty") val isDirectoryEmpty: Boolean,
-    @ColumnInfo(name = "can_read") val canRead: Boolean
+    @ColumnInfo(name = "can_read") val canRead: Boolean,
+    @ColumnInfo(name = "hash_code") val hashC0de: Int
+    //@ColumnInfo(name = "checksum") val checksum: String
 )

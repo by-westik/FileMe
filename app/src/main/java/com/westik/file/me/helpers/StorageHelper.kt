@@ -2,7 +2,12 @@ package com.westik.file.me.helpers
 
 import com.westik.file.me.models.FileEntity
 import java.io.File
+import java.math.BigInteger
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.security.MessageDigest
 import java.util.LinkedList
+
 
 class StorageHelper {
 
@@ -40,7 +45,8 @@ class StorageHelper {
                                         parentPath = it.parent,
                                         isDirectory = it.isDirectory,
                                         isDirectoryEmpty = if (it.isDirectory) it.list().isNullOrEmpty() else false,
-                                        canRead = it.canRead()
+                                        canRead = it.canRead(),
+                                        hashC0de = it.lastModified().hashCode()
                                     )
                                 )
                             }
@@ -50,7 +56,6 @@ class StorageHelper {
             }
             return result
         }
-
 
         fun getFilesFromPath(path: String = Constants.BASE_PATH) : List<FileEntity> {
             val result = mutableListOf<FileEntity>()
@@ -68,7 +73,9 @@ class StorageHelper {
                             parentPath = it.parent,
                             isDirectory = it.isDirectory,
                             isDirectoryEmpty = if (it.isDirectory) it.list().isNullOrEmpty() else false,
-                            canRead = it.canRead()
+                            canRead = it.canRead(),
+                            hashC0de = it.lastModified().hashCode()
+                      //      checksum = checksum
                         )
                     )
                 }
