@@ -1,6 +1,8 @@
 package com.westik.file.me.di
 
 import android.content.Context
+import androidx.room.Room
+import com.westik.file.me.data.FileRepository
 import com.westik.file.me.data.db.FileDao
 import com.westik.file.me.data.db.FileRoomDatabase
 import dagger.Module
@@ -16,6 +18,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context, provider: Provider<FileDao>): FileRoomDatabase =
@@ -25,4 +28,9 @@ object AppModule {
     fun provideDao(database: FileRoomDatabase): FileDao {
         return database.getFileDao()
     }
+    @Singleton
+    @Provides
+    fun provideFilesRepository(
+        database: FileRoomDatabase
+    ) = FileRepository(database.getFileDao())
 }

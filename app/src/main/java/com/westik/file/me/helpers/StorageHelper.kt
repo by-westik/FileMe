@@ -1,6 +1,7 @@
 package com.westik.file.me.helpers
 
 import com.westik.file.me.models.FileEntity
+import com.westik.file.me.models.FileItem
 import java.io.File
 import java.math.BigInteger
 import java.nio.file.Files
@@ -38,15 +39,7 @@ class StorageHelper {
                                 result.add(
                                     FileEntity(
                                         id = 0,
-                                        name = it.name,
-                                        lastModified = it.lastModified(),
-                                        size = it.length(),
-                                        type = it.extension,
                                         absolutePath = it.absolutePath,
-                                        parentPath = it.parent,
-                                        isDirectory = it.isDirectory,
-                                        isDirectoryEmpty = if (it.isDirectory) it.list().isNullOrEmpty() else false,
-                                        canRead = it.canRead(),
                                         hashC0de = it.lastModified().hashCode()
                                     )
                                 )
@@ -57,32 +50,8 @@ class StorageHelper {
             }
             return result
         }
-/*
-        fun getFilesFromPath(path: String = Constants.BASE_PATH) : List<FileEntity> {
-            val result = mutableListOf<FileEntity>()
 
-            File(path).listFiles()?.forEach {
-                if (!it.isHidden) {
-                    result.add(
-                        FileEntity(
-                            id = 0,
-                            name = it.name,
-                            lastModified = it.lastModified(),
-                            size = it.length(),
-                            type = it.extension,
-                            absolutePath = it.absolutePath,
-                            parentPath = it.parent,
-                            isDirectory = it.isDirectory,
-                            isDirectoryEmpty = if (it.isDirectory) it.list().isNullOrEmpty() else false,
-                            canRead = it.canRead(),
-                            hashC0de = it.lastModified().hashCode()
-                      //      checksum = checksum
-                        )
-                    )
-                }
-            }
+        fun getFilesFromPath(path: String): List<File> = File(path).listFiles()?.toList() ?: emptyList()
 
-            return result
-        }*/
     }
 }

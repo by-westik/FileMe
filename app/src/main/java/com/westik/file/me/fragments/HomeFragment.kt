@@ -14,6 +14,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.westik.file.me.R
@@ -28,8 +31,10 @@ import com.westik.file.me.helpers.FileItemDecorator
 import com.westik.file.me.helpers.StorageHelper
 import com.westik.file.me.helpers.SorterClass
 import com.westik.file.me.models.FileEntity
+import com.westik.file.me.models.FileItem
 import com.westik.file.me.viewmodels.FileViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Collections
 
@@ -41,7 +46,7 @@ class HomeFragment : Fragment() {
 
     private val viewModel : FileViewModel by viewModels()
 
-    private var files: List<FileEntity> = listOf()
+    private var files: List<FileItem> = listOf()
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
@@ -50,9 +55,6 @@ class HomeFragment : Fragment() {
 
     private var currentPath: String = Constants.BASE_PATH
     private lateinit var bottomSheetDialog: BottomSheetDialog
-
-    private var updatedFiles = mutableListOf<FileEntity>()
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,7 +68,7 @@ class HomeFragment : Fragment() {
         return view
     }
 
-    private fun click(file: FileEntity) {
+    private fun click(file: FileItem) {
         if (!file.canRead) {
             Toast.makeText(requireContext(), "Доступ запрещен", Toast.LENGTH_LONG).show()
 
@@ -78,8 +80,7 @@ class HomeFragment : Fragment() {
                 currentPath = file.absolutePath
                 viewModel.updateCurrentFiles(currentPath)
                 viewModel.currentFiles.observe(viewLifecycleOwner) {
-                    files = it
-                    fileAdapter.updateAdapter(files)
+                    fileAdapter.updateAdapter(it)
                 }
             }
         } else {
@@ -87,10 +88,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun change(file: FileEntity) {
-        updatedFiles.add(file)
-        Log.d(TAG, "File added")
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -101,8 +98,7 @@ class HomeFragment : Fragment() {
                 if (file != null && file.canRead()) {
                     viewModel.updateCurrentFiles(file.absolutePath)
                     viewModel.currentFiles.observe(viewLifecycleOwner) {
-                        files = it
-                        fileAdapter.updateAdapter(files)
+                        fileAdapter.updateAdapter(it)
                     }
                     currentPath = file.absolutePath
                 }
@@ -121,24 +117,17 @@ class HomeFragment : Fragment() {
         if (AskingPermissionDialog().isPermissionGranted(requireContext())) {
             setupRecyclerView()
         }
-        val list = mutableListOf<Pair<Int, Int>>()
-        updatedFiles.forEach {
-            list.add(Pair(it.hashCode(), it.id))
-        }
-        viewModel.updateHashCode(list)
     }
     private fun setupRecyclerView() {
         if (AskingPermissionDialog().isPermissionGranted(requireContext())) {
             val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            val changeHashCode = {file : FileEntity -> change(file)}
-            val itemClick = { file: FileEntity -> click(file)}
-            fileAdapter = FileAdapter(files, this, itemClick, changeHashCode)
+            val itemClick = { file: FileItem -> click(file)}
+            fileAdapter = FileAdapter(files, this, itemClick)
 
             binding.rvFiles.layoutManager = linearLayoutManager
             binding.rvFiles.adapter = fileAdapter
             viewModel.currentFiles.observe(viewLifecycleOwner) {
-                files = it
-                fileAdapter.updateAdapter(files)
+                fileAdapter.updateAdapter(it)
             }
 
             ContextCompat.getDrawable(requireContext(), R.drawable.divider)?.let {
@@ -155,11 +144,6 @@ class HomeFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         Log.d(TAG, "OnStop")
-        val list = mutableListOf<Pair<Int, Int>>()
-        updatedFiles.forEach {
-            list.add(Pair(File(it.absolutePath).lastModified().hashCode(), it.id))
-        }
-        viewModel.updateHashCode(list)
     }
 
     // TODO вынести куда-то создание диалога потом возможно

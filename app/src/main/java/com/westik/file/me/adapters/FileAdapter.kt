@@ -8,12 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.westik.file.me.fragments.HomeFragment
 import com.westik.file.me.R
 import com.westik.file.me.databinding.FileItemBinding
 import com.westik.file.me.helpers.FileHelper
 import com.westik.file.me.models.FileEntity
+import com.westik.file.me.models.FileItem
 import java.io.File
 import java.math.BigInteger
 import java.nio.file.Files
@@ -22,9 +24,7 @@ import java.security.MessageDigest
 
 class FileViewHolder(private val binding: FileItemBinding, private val context: Context) : RecyclerView.ViewHolder(binding.root){
 
-    fun bind(file: FileEntity) : Boolean {
-        Log.d(TAG, "BIND")
-        var flag = false
+    fun bind(file: FileItem) {
         binding.apply {
             if (file.isDirectory) {
                 tvFileSize.visibility = View.GONE
@@ -47,7 +47,6 @@ class FileViewHolder(private val binding: FileItemBinding, private val context: 
             } else {
                 if (file.hashC0de != File(file.absolutePath).lastModified().hashCode()) {
                     imvIsUpdate.visibility = View.VISIBLE
-                    flag = true
                 } else {
                     imvIsUpdate.visibility = View.GONE
                 }
@@ -58,16 +57,14 @@ class FileViewHolder(private val binding: FileItemBinding, private val context: 
             tvFileName.text = file.name
             tvFileSize.text = FileHelper.getFileSize(file.size)
         }
-        return flag
     }
 }
 
 
 class FileAdapter(
-    private var files: List<FileEntity>,
+    private var files: List<FileItem>,
     private val fragment: HomeFragment,
-    private val onItemClick: (file: FileEntity) -> Unit,
-    private val changeHashCode: (file: FileEntity) -> Unit
+    private val onItemClick: (file: FileItem) -> Unit
 ) : RecyclerView.Adapter<FileViewHolder>() {
 
 
@@ -80,9 +77,7 @@ class FileAdapter(
 
     override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
         val file = files[position]
-        if (holder.bind(file)) {
-            changeHashCode(file)
-        }
+        holder.bind(file)
 
         holder.itemView.setOnClickListener {
             onItemClick(file)
@@ -96,7 +91,7 @@ class FileAdapter(
 
     }
 
-    fun updateAdapter(list: List<FileEntity>) {
+    fun updateAdapter(list: List<FileItem>) {
         this.files = list
         notifyDataSetChanged()
     }

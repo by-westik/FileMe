@@ -9,6 +9,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import com.westik.file.me.R
 import com.westik.file.me.models.FileEntity
+import com.westik.file.me.models.FileItem
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -53,7 +54,7 @@ class FileHelper {
 
         }
 
-        fun openFile(file: FileEntity, context: Context) : Intent {
+        fun openFile(file: FileItem, context: Context) : Intent {
             val apkUri = FileProvider.getUriForFile(context, context.packageName + ".helpers.MyFileProvider", File(file.absolutePath))
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(apkUri, null)
@@ -61,7 +62,7 @@ class FileHelper {
             }
             return intent
         }
-        fun sendFile(file: FileEntity, context: Context) : Intent {
+        fun sendFile(file: FileItem, context: Context) : Intent {
             Log.d(TAG, "${context.packageName}")
             val apkUri = FileProvider.getUriForFile(
                 context,

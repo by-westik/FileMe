@@ -10,25 +10,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FileDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFile(file: FileEntity)
 
-  //  @Query("SELECT * FROM files")
-//    fun getAllFiles(): Flow<List<FileEntity>>
-
-    @Query("SELECT * FROM files WHERE parent_path = :path ORDER BY name ASC")
-    fun getFilesFromDirectory(path: String): Flow<List<FileEntity>>
-    @Query("UPDATE files SET hash_code = :hashCode where file_id = :id")
-    suspend fun updateHashCode(hashCode: Int, id: Int)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(files: List<FileEntity>)
 
     @Query("DELETE FROM files")
     suspend fun deleteAll()
 
-    suspend fun insertFiles(files: List<FileEntity>) {
-        files.forEach {
-            insertFile(it)
-        }
-    }
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertAll(vararg file: FileEntity)
 }

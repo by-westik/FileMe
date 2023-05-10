@@ -1,7 +1,6 @@
 package com.westik.file.me.data.db
 
-import android.content.ContentValues.TAG
-import android.util.Log
+
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.westik.file.me.helpers.StorageHelper
@@ -17,13 +16,11 @@ class FileRoomDatabaseCallback(private val provider: Provider<FileDao>) : RoomDa
     override fun onCreate(db: SupportSQLiteDatabase) {
         super.onCreate(db)
         coroutineScopeForAllDb.launch {
-            Log.d(TAG, "START")
             populateDatabase()
-            Log.d(TAG, "END")
         }
     }
 
     private suspend fun populateDatabase() {
-        provider.get().insertFiles(StorageHelper.breadthFirstSearchFiles())
+        provider.get().insertAll(StorageHelper.breadthFirstSearchFiles())
     }
 }
