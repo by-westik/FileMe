@@ -34,7 +34,6 @@ class StorageHelper {
                 if (current != null) {
                     if (!current.listFiles().isNullOrEmpty()) {
                         current.listFiles()?.forEach {
-                            Log.d(TAG, "name =${it.name} date = ${it.lastModified()}")
                             if (!it.isHidden) {
                                 if (it.isDirectory) {
                                     queue.add(it)
@@ -43,7 +42,7 @@ class StorageHelper {
                                     FileEntity(
                                         id = 0,
                                         absolutePath = it.absolutePath,
-                                        hashC0de = if (it.isDirectory) 0 else it.lastModified().hashCode()
+                                        hashC0de = if (it.isDirectory) 0 else it.lastModified()
                                     )
                                 )
                             }
@@ -51,7 +50,6 @@ class StorageHelper {
                     }
                 }
             }
-                    Log.d(TAG, "size = ${result.size}")
             return result
         }
 

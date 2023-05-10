@@ -35,7 +35,6 @@ class FileViewModel @Inject constructor(private val fileRepository: FileReposito
 
     init {
         viewModelScope.launch {
-            fileRepository.getFile(0)
             fileRepository.createHashList()
         }
 

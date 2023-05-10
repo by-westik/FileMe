@@ -10,5 +10,5 @@ data class FileEntity (
     @ColumnInfo(name = "file_id")
     val id: Int,
     @ColumnInfo(name = "absolute_path") val absolutePath: String,
-    @ColumnInfo(name = "hash_code") val hashC0de:Int
+    @ColumnInfo(name = "hash_code") val hashC0de: Long
 )

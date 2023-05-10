@@ -20,7 +20,7 @@
             android:id="@+id/tv_file_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxEms="11"
+            android:maxEms="10"
             android:text="@string/file_name"
             android:layout_marginStart="10dp"
             android:textSize="16sp"
@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            app:srcCompat="@drawable/ic_file"
+            app:srcCompat="@drawable/new_box"
             app:layout_constraintTop_toTopOf="@id/tv_file_name"
             app:layout_constraintStart_toEndOf="@id/tv_file_name"
             app:layout_constraintBottom_toBottomOf="@id/tv_file_name"/>

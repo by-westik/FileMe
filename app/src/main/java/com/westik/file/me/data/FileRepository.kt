@@ -25,20 +25,11 @@ class FileRepository @Inject constructor(private val fileDao: FileDao,
                                          private val dispatcher: CoroutineDispatcher = Dispatchers.IO) {
 
 
-    @Suppress("RedunantSuperModifier")
-    @WorkerThread
-    suspend fun getAll() = fileDao.getAll()
-
-    private var hashCodes: MutableList<Int> = mutableListOf()
+    private var hashCodes: MutableList<Long> = mutableListOf()
     suspend fun createHashList() {
-        hashCodes.addAll(fileDao.getAll().map {
-            Log.d(TAG, "IT hashcpde = ${it.hashC0de}")
-            it.hashC0de })
+        hashCodes.addAll(fileDao.getAll().map { it.hashC0de })
     }
 
-    suspend fun getFile(id: Int) {
-        fileDao.getFile(id)
-    }
     fun getFilesFromDirectory(path: String, comparator: Comparator<File>, ascDesc: Boolean) : Flow<List<FileItem>> = flow {
         val rawFiles = StorageHelper.getFilesFromPath(path).filter { !it.isHidden }.sortedWith(comparator)
         if (ascDesc) {
@@ -58,7 +49,7 @@ class FileRepository @Inject constructor(private val fileDao: FileDao,
                         type = it.extension,
                         isDirectoryEmpty = if (it.isDirectory) it.listFiles()
                             .isNullOrEmpty() else false,
-                        isModified = !hashCodes.contains(it.lastModified().hashCode())
+                        isModified = !hashCodes.contains(it.lastModified())
                     )
                 }
             }
