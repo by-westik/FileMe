@@ -3,6 +3,7 @@ package com.westik.file.me.data
 import android.content.Context
 import androidx.annotation.WorkerThread
 import com.westik.file.me.data.db.FileDao
+import com.westik.file.me.helpers.SorterClass
 import com.westik.file.me.helpers.StorageHelper
 import com.westik.file.me.models.FileEntity
 import com.westik.file.me.models.FileItem
@@ -14,6 +15,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import java.io.File
+import java.util.Collections
 import javax.inject.Inject
 
 class FileRepository @Inject constructor(private val fileDao: FileDao,
@@ -32,9 +35,11 @@ class FileRepository @Inject constructor(private val fileDao: FileDao,
     }
 
 
-    fun getFilesFromDirectory(path: String) : Flow<List<FileItem>> = flow {
-        val rawFiles = StorageHelper.getFilesFromPath(path).filter { !it.isHidden }.sortedBy { it.name }
-
+    fun getFilesFromDirectory(path: String, comparator: Comparator<File>, ascDesc: Boolean) : Flow<List<FileItem>> = flow {
+        var rawFiles = StorageHelper.getFilesFromPath(path).filter { !it.isHidden }.sortedWith(comparator)
+        if (ascDesc) {
+            Collections.reverse(rawFiles)
+        }
 
         val fileList = coroutineScope {
             rawFiles.map {

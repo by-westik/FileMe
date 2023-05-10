@@ -11,6 +11,7 @@ import com.westik.file.me.helpers.Constants
 
 import com.westik.file.me.models.FileEntity
 import com.westik.file.me.data.FileRepository
+import com.westik.file.me.helpers.SorterClass
 import com.westik.file.me.models.FileItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.coroutineScope
@@ -23,12 +24,12 @@ import javax.inject.Inject
 @HiltViewModel
 class FileViewModel @Inject constructor(private val fileRepository: FileRepository) : ViewModel() {
 
-    private var _currentFiles: MutableLiveData<List<FileItem>> = fileRepository.getFilesFromDirectory(Constants.BASE_PATH).asLiveData() as MutableLiveData<List<FileItem>>
+    private var _currentFiles: MutableLiveData<List<FileItem>> = fileRepository.getFilesFromDirectory(Constants.BASE_PATH, SorterClass.sortByName, false).asLiveData() as MutableLiveData<List<FileItem>>
     val currentFiles: LiveData<List<FileItem>>
         get() = _currentFiles
 
-    fun updateCurrentFiles(path: String) = viewModelScope.launch {
-        _currentFiles = fileRepository.getFilesFromDirectory(path).asLiveData() as MutableLiveData<List<FileItem>>
+    fun updateCurrentFiles(path: String, comparator: Comparator<File> = SorterClass.sortByName, ascDesc: Boolean = false) = viewModelScope.launch {
+        _currentFiles = fileRepository.getFilesFromDirectory(path, comparator, ascDesc).asLiveData() as MutableLiveData<List<FileItem>>
     }
 
     init {

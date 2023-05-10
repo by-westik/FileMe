@@ -5,6 +5,7 @@ import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -15,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.findViewTreeViewModelStoreOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -148,38 +150,51 @@ class HomeFragment : Fragment() {
 
     // TODO вынести куда-то создание диалога потом возможно
     private fun setFilterData() {
+
        binding.toolbar.setOnMenuItemClickListener {
            val dialogView = FilterBinding.inflate(layoutInflater)
            bottomSheetDialog = BottomSheetDialog(requireContext())
            bottomSheetDialog.setContentView(dialogView.root)
            bottomSheetDialog.show()
 
-           dialogView.ascDesc.setOnClickListener {
+           var type: Comparator<File> = SorterClass.sortByName
+           var ascDesc = true
+           dialogView.ascDesc.setOnClickListener { it ->
                val rotateAnimation = AnimationHelper.createRotateAnimation()
-               Collections.reverse(files)
-               fileAdapter.updateAdapter(files)
+
+               viewModel.updateCurrentFiles(currentPath,type, ascDesc)
+               viewModel.currentFiles.observe(viewLifecycleOwner) {list ->
+                   fileAdapter.updateAdapter(list)
+               }
+               ascDesc = !ascDesc
                it.startAnimation(rotateAnimation)
            }
+
            // TODO посмотреть про notifyDataSetChanged
-           dialogView.filterGroup.setOnCheckedChangeListener { _, checkedId ->
+           dialogView.filterGroup.setOnCheckedChangeListener {_,  checkedId ->
                when (checkedId) {
                    R.id.name -> {
-                       Collections.sort(files, SorterClass.sortByName)
+                       type = SorterClass.sortByName
                    }
                    R.id.size -> {
-                       Collections.sort(files, SorterClass.sortBySize)
+                       type = SorterClass.sortBySize
                    }
 
                    R.id.date -> {
-                       Collections.sort(files, SorterClass.sortByDate)
+                       type = SorterClass.sortByDate
                    }
 
                    R.id.type -> {
-                       Collections.sort(files, SorterClass.sortByType)
+                       type = SorterClass.sortByType
                    }
                }
-               fileAdapter.updateAdapter(files)
+               viewModel.updateCurrentFiles(currentPath, type)
+               viewModel.currentFiles.observe(viewLifecycleOwner) {
+                   fileAdapter.updateAdapter(it)
+               }
+
            }
+
 
            return@setOnMenuItemClickListener true
        }
