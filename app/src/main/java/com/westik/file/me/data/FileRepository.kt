@@ -1,6 +1,8 @@
 package com.westik.file.me.data
 
+import android.content.ContentValues.TAG
 import android.content.Context
+import android.util.Log
 import androidx.annotation.WorkerThread
 import com.westik.file.me.data.db.FileDao
 import com.westik.file.me.helpers.SorterClass
@@ -25,18 +27,20 @@ class FileRepository @Inject constructor(private val fileDao: FileDao,
 
     @Suppress("RedunantSuperModifier")
     @WorkerThread
-    suspend fun insert(file: FileEntity) {
-        fileDao.insertFile(file)
+    suspend fun getAll() = fileDao.getAll()
+
+    private var hashCodes: MutableList<Int> = mutableListOf()
+    suspend fun createHashList() {
+        hashCodes.addAll(fileDao.getAll().map {
+            Log.d(TAG, "IT hashcpde = ${it.hashC0de}")
+            it.hashC0de })
     }
 
-    suspend fun saveHashesToBd(path: String) {
-        val files = StorageHelper.breadthFirstSearchFiles(path)
-        fileDao.insertAll(files)
+    suspend fun getFile(id: Int) {
+        fileDao.getFile(id)
     }
-
-
     fun getFilesFromDirectory(path: String, comparator: Comparator<File>, ascDesc: Boolean) : Flow<List<FileItem>> = flow {
-        var rawFiles = StorageHelper.getFilesFromPath(path).filter { !it.isHidden }.sortedWith(comparator)
+        val rawFiles = StorageHelper.getFilesFromPath(path).filter { !it.isHidden }.sortedWith(comparator)
         if (ascDesc) {
             Collections.reverse(rawFiles)
         }
@@ -54,7 +58,7 @@ class FileRepository @Inject constructor(private val fileDao: FileDao,
                         type = it.extension,
                         isDirectoryEmpty = if (it.isDirectory) it.listFiles()
                             .isNullOrEmpty() else false,
-                        hashC0de = it.lastModified().hashCode()
+                        isModified = !hashCodes.contains(it.lastModified().hashCode())
                     )
                 }
             }

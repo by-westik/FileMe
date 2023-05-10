@@ -45,7 +45,8 @@ class FileViewHolder(private val binding: FileItemBinding, private val context: 
                     )
                 }
             } else {
-                if (file.hashC0de != File(file.absolutePath).lastModified().hashCode()) {
+
+                if (file.isModified) {
                     imvIsUpdate.visibility = View.VISIBLE
                 } else {
                     imvIsUpdate.visibility = View.GONE

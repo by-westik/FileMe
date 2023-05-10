@@ -10,5 +10,5 @@ data class FileItem (
     val isDirectory: Boolean,
     val isDirectoryEmpty: Boolean,
     val canRead: Boolean,
-    val hashC0de:Int
+    val isModified: Boolean
 )

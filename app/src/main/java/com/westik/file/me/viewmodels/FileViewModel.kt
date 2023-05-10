@@ -14,6 +14,7 @@ import com.westik.file.me.data.FileRepository
 import com.westik.file.me.helpers.SorterClass
 import com.westik.file.me.models.FileItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -34,8 +35,9 @@ class FileViewModel @Inject constructor(private val fileRepository: FileReposito
 
     init {
         viewModelScope.launch {
-            fileRepository.saveHashesToBd(Constants.BASE_PATH)
+            fileRepository.getFile(0)
+            fileRepository.createHashList()
         }
-    }
 
+    }
 }

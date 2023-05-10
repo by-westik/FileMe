@@ -19,6 +19,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.findViewTreeViewModelStoreOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.westik.file.me.R
@@ -36,6 +37,7 @@ import com.westik.file.me.models.FileEntity
 import com.westik.file.me.models.FileItem
 import com.westik.file.me.viewmodels.FileViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Collections
@@ -194,7 +196,6 @@ class HomeFragment : Fragment() {
                }
 
            }
-
 
            return@setOnMenuItemClickListener true
        }
